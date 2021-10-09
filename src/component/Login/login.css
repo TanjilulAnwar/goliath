@@ -1,0 +1,47 @@
+.login{
+    margin: 50px;
+    display: flex;
+    flex-direction: auto;
+
+}
+
+.login-form{
+    flex-direction: column;
+}
+
+.login-input{
+    float: right;
+    border:none;
+    cursor: pointer;
+    border-bottom: 2px solid gray;
+}
+
+.login-input:checked{
+    float: right;
+    border:none;
+}
+
+.login-button{
+    background-color: dodgerblue;
+    border: none;
+    padding: 10px 10px;
+    color: white;
+    font-weight: 600;
+    border-radius: 5px;
+}
+
+
+
+
+.login-item{
+    margin-bottom: 15px;
+
+}
+
+.login-label{
+    font-size: 15px;
+    margin-right: 25px;
+    color:dodgerblue;
+    font-weight: 600;
+}
+

@@ -1,0 +1,397 @@
+import React, { Component } from 'react';
+import { Variable } from '../Variable';
+import { Link } from 'react-router-dom';
+
+export default class EmployeeList extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      departments: [],
+      employees: [],
+      modalTitle: "",
+      EmployeeId: 0,
+      EmployeeName: "",
+      Department: "",
+      DateOfJoining: "",
+      PhotoFileName: "",
+      PhotoPath: Variable.PHOTO_URL,
+      fileURL:null,
+      file:null,
+
+    }
+  }
+
+  refreshList() {
+
+    fetch(Variable.API_URL + 'employee/Get')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ employees: data });
+      });
+
+    fetch(Variable.API_URL + 'department/Get')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ departments: data });
+      });
+  }
+
+  componentDidMount() {
+    this.refreshList();
+  }
+
+  changeEmployeeName = (e) => {
+    this.setState({ EmployeeName: e.target.value });
+  }
+  changeDepartment = (e) => {
+    this.setState({ Department: e.target.value });
+  }
+  changeDateOfJoining = (e) => {
+    this.setState({ DateOfJoining: e.target.value });
+  }
+
+  addClick() {
+
+    this.setState({
+
+      modalTitle: "Add Employee",
+      EmployeeId: 0,
+      EmployeeName: "",
+      Department: this.state.departments[0].DepartmentName,
+      DepartmentId:this.state.departments[0].DepartmentId,
+      DateOfJoining: "",
+      PhotoFileName: "",
+      fileURL:null
+    });
+
+  }
+  editClick(emp) {
+    this.setState({
+      modalTitle: "Edit Employee",
+      EmployeeId: emp.EmployeeId,
+      EmployeeName: emp.EmployeeName,
+      Department: emp.Department,
+      DateOfJoining: emp.DateOfJoining,
+      fileURL: this.state.PhotoPath+emp.PhotoFileName,
+      PhotoFileName:emp.PhotoFileName
+    });
+  }
+
+
+  updateClick() {
+    // e.preventDefault();
+     
+    const formData = new FormData();
+    formData.append("EmployeeId", this.state.EmployeeId);
+    formData.append("EmployeeName", this.state.EmployeeName);
+    formData.append("Department", this.state.Department);
+    formData.append("DateOfJoining", this.state.DateOfJoining);
+    formData.append("file",this.state.file );
+    formData.append("PhotoFileName",this.state.PhotoFileName)
+ 
+    fetch(Variable.API_URL + 'employee/put', {
+      method: 'PUT',
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ PhotoFileName: data });
+      })
+   }
+ 
+
+  createClick() {
+    fetch(Variable.API_URL + 'employee/Post', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        EmployeeName: this.state.EmployeeName,
+        Department: this.state.Department,
+        DateOfJoining: this.state.DateOfJoining,
+        PhotoFileName: this.state.PhotoFileName
+      })
+    })
+      .then(res => res.json())
+      .then((result) => {
+        alert(result);
+        this.refreshList();
+      }, (error) => {
+        alert('Failed');
+      })
+  }
+
+
+ 
+  deleteClick(id) {
+   
+    if (window.confirm('Are you sure?')) {
+     
+      fetch(Variable.API_URL + 'employee/Delete?ID=' + id, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then((result) => {
+          alert(result);
+          this.refreshList();
+        }, (error) => {
+          alert('Failed');
+        })
+    }
+  }
+
+  PostData = (e) => {
+
+   // e.preventDefault();
+    
+    const formData = new FormData();
+   
+    formData.append("EmployeeName", this.state.EmployeeName);
+    formData.append("Department", this.state.Department);
+    formData.append("PhotoFileName", "photo.jpg");
+    formData.append("DateOfJoining", this.state.DateOfJoining);
+    formData.append("file",this.state.file );
+
+    fetch(Variable.API_URL + 'employee/post', {
+      method: 'POST',
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ PhotoFileName: data });
+      })
+  }
+
+
+
+  showImage=(e)=>{
+
+    this.setState({
+      fileURL: URL.createObjectURL(e.target.files[0]),
+      file:e.target.files[0]
+    })
+
+  }
+
+
+
+
+
+  render() {
+    const {
+      departments,
+      employees,
+      modalTitle,
+      EmployeeId,
+      EmployeeName,
+      Department,
+      DateOfJoining,
+      PhotoPath,
+      PhotoFileName
+    } = this.state;
+
+
+
+
+    return (
+      <div className="content-wrapper">
+        {/* Content Header (Page header) */}
+        <div className="content-header">
+          <div className="container-fluid">
+            <div className="row mb-2">
+              <div className="col-sm-6">
+                <h1 className="m-0 text-dark">Employee List</h1>
+              </div>{/* /.col */}
+              <div className="col-sm-6">
+                <ol className="breadcrumb float-sm-right">
+                  <button type="button"
+                    className="btn btn-primary m-2 float-end"
+                    data-toggle="modal"
+                    data-target="#modal-lg"
+                    onClick={() => this.addClick()}>
+                    Add Employee
+                  </button>
+                  {/* <Link to="/empoyeeadd" className="btn btn-success btn-sm">
+                    Employee Add
+                  </Link> */}
+                </ol>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <section className="content">
+          <div className="container-fluid">
+            <div className="row">
+              {/* left column */}
+              <div className="col-md-12">
+                {/* general form elements */}
+                <div className="card card-primary">
+                  <div className="card-header">
+                    <div className="row">
+
+                      <div className="col-md-2">
+                        <h3 className="card-title">Employee List</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card-body">
+
+                    {/* //////////////////////////// */}
+                    <div className="card-body table-responsive p-0">
+                      <table className="table table-hover table-bordered text-nowrap">
+                        <thead>
+                          <tr>
+                            <th>
+                              EmployeeId
+                            </th>
+                            <th>
+                              Photo
+                            </th>
+                            <th>
+                              EmployeeName
+                            </th>
+                            <th>
+                              Department
+                            </th>
+                            <th>
+                              DOJ
+                            </th>
+                            <th>
+                              Options
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {employees.map(emp =>
+                            <tr key={emp.EmployeeId}>
+                              <td>{emp.EmployeeId}</td>
+                              <td><img width="80px" height="50px" src={PhotoPath+emp.PhotoFileName} alt=""/></td>
+                              <td>{emp.EmployeeName}</td>
+                              <td>{emp.Department}</td>
+                              <td>{emp.DateOfJoining}</td>
+                              <td>
+                                <button type="button"
+                                  className="btn btn-primary mr-1"
+                                  data-toggle="modal"
+                                  data-target="#modal-lg"
+                                  onClick={() => this.editClick(emp)}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                    <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                  </svg>
+                                </button>
+
+                                <button type="button"
+                                  className="btn btn-danger mr-1"
+                                  onClick={() => this.deleteClick(emp.EmployeeId)}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
+                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                                  </svg>
+                                </button>
+
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="modal fade" id="modal-lg" >
+                      <div className="modal-dialog modal-lg">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h5 className="modal-title">{modalTitle}</h5>
+                            {/* <button type="button" className="close" data-dismiss="modal" aria-label="Close"></button> */}
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+
+                          <div className="modal-body">
+
+                            <div className="row">
+                              <div className="col-md-7">
+
+                                <div className="input-group mb-3">
+                                  <span className="input-group-text">Emp Name</span>
+                                  <input type="text" className="form-control"
+                                    value={this.state.EmployeeName}
+                                    onChange={this.changeEmployeeName} />
+                                </div>
+
+                                <div className="input-group mb-3">
+                                  <span className="input-group-text">Department</span>
+                                  <select className="form-control"
+                                    onChange={this.changeDepartment}
+                                    value={this.state.Department}>
+                                    {departments.map(dep => <option key={dep.DepartmentId}>
+                                      {dep.DepartmentName}
+                                    </option>)}
+                                  </select>
+                                </div>
+
+                                <div className="input-group mb-3">
+                                  <span className="input-group-text">DOJ</span>
+                                  <input type="date" className="form-control"
+                                    value={this.state.DateOfJoining}
+                                    onChange={this.changeDateOfJoining.bind(this)} />
+                                </div>
+
+
+                              </div>
+                              <div className="col-md-5">
+                                <img width="250px" height="250px"
+                                  src={this.state.fileURL} />
+                                <input className="m-2" type="file" onChange={this.showImage} />
+                              </div>
+
+
+                              {EmployeeId == 0 ?
+                                <button type="button"
+                                  className="btn btn-primary float-start"
+                                  onClick={() => this.PostData()}
+                                >Create</button>
+                                : null}
+
+                              {EmployeeId != 0 ?
+                                <button type="button"
+                                  className="btn btn-primary float-start"
+                                  onClick={() => this.updateClick()}
+                                >Update</button>
+                                : null}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+
+
+
+                    {/* /////////////////////////////////// */}
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    )
+  }
+}
