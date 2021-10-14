@@ -1,0 +1,59 @@
+.post-container{
+    margin: 50px;
+    display: flex;
+    flex-direction: auto;
+	background:rgba(203, 229, 255,0.4);
+	max-width: 500px;
+	padding: 20px;
+	border-radius:15px;
+}
+
+.post-form{
+   
+    flex-direction: column;
+}
+
+.post-textarea{
+    height: 200px;
+    background-color: #303245;
+    border-radius: 12px;
+ 
+    box-sizing: border-box;
+    color: #eee;
+    font-size: 15px;
+    color: rgb(214, 157, 0);
+    
+    outline: 0;
+    padding: 15px;
+    width: 100%;
+}
+
+.post-button{
+
+    margin-top: 20px;
+    background-color: rgb(53, 53, 53);
+    border: none;
+    padding: 10px 10px;
+    color: white;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+
+
+}
+
+
+
+.post-button:focus,.post-button:hover{
+    
+    background-color: rgb(129, 0, 90);
+ 
+}
+
+.post-item{
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+
+}
+

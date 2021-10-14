@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Login from './component/Login/Login';
 import Post from './component/Post/Post';
+import './App.css'
 
 
 export default class App extends Component {
@@ -27,6 +28,7 @@ export default class App extends Component {
   //arrow function required for this.setState
   loginData=(data)=>{
     this.setState({ login: data.login, token: data.token })
+    console.log(this.state.token )
   }
 
 
@@ -34,7 +36,7 @@ export default class App extends Component {
   render() {
     return (
       <div className="AppMain">
-        <h1 className="AppHeader">Jwt Token with React</h1>
+        <h1 className="AppHeader">Login</h1>
         {
           !this.state.login ? <Login getdata={this.loginData}/>:<Post/>
         }

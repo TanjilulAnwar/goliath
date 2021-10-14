@@ -18,14 +18,15 @@ export default class Login extends Component {
 
 
 
-    login() {
+    login(){
+        console.log("hoitese")
         axios.post('Hotel/Login', {
             UserName: this.state.email,
             Password: this.state.password,
             Id: 0
         })
             .then((response) => {
-                //  console.log(response.data)
+                console.log(response.data)
                 if (response.data.success) {
                     localStorage.setItem('login', JSON.stringify({
                         login: true,
@@ -41,7 +42,7 @@ export default class Login extends Component {
 
             })
             .catch(function (error) {
-                // console.log(`error code:${error.response.status}`);
+                 console.log(`error code:${error.response.status}`);
                 if (error.response.status === 401) {
                     alert("Username or Password incorrect!")
                 }
@@ -55,7 +56,7 @@ export default class Login extends Component {
         return (
 
             <div className="login">
-                <form className="login-form">
+                <div className="login-form" action="">
                     <div className="login-item">
                     <label className="login-label">Username</label>
                     <input className="login-input" type="text" onChange={(e) => {
@@ -72,7 +73,7 @@ export default class Login extends Component {
                     <div className="login-item">
                     <button className="login-button" onClick={() => { this.login() }}>Login</button>
                     </div>
-                </form>
+                </div>
             </div>
         )
     }
